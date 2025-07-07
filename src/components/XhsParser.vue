@@ -12,7 +12,7 @@
 
         <div class="input-section">
             <div class="input-box">
-                <input type="text" v-model="url" placeholder="粘贴小红书笔记链接或包含链接的整段文字..." @keyup.enter="parseUrl" />
+                <input type="text" v-model="url" placeholder="粘贴小红书笔记链接" @keyup.enter="parseUrl" />
                 <button @click="parseUrl"><i class="fas fa-bolt"></i> 立即解析</button>
             </div>
 
@@ -36,6 +36,21 @@
             </div>
 
             <div class="result-content">
+                <!-- 图片展示区域（突出显示） -->
+                <div class="images-section">
+                    <div class="main-image">
+                        <img :src="currentImage" alt="笔记主图" />
+                        <button class="download-btn" @click="downloadImage(currentImage, result.title + '-主图.jpg')"><i class="fas fa-download"></i> 下载大图</button>
+                    </div>
+
+                    <div class="thumbnail-grid">
+                        <div v-for="(img, index) in result.imgurl" :key="index" class="thumbnail" :class="{ active: currentImage === img }" @click="currentImage = img">
+                            <img :src="img" :alt="'缩略图' + (index + 1)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户信息区域（弱化显示） -->
                 <div class="post-info">
                     <div class="author-info">
                         <div class="author-avatar">
@@ -53,19 +68,6 @@
 
                         <h4>笔记描述</h4>
                         <p class="post-desc">{{ result.desc }}</p>
-                    </div>
-                </div>
-
-                <div class="images-section">
-                    <div class="main-image">
-                        <img :src="currentImage" alt="笔记主图" />
-                        <button class="download-btn" @click="downloadImage(currentImage, result.title + '-主图.jpg')"><i class="fas fa-download"></i> 下载大图</button>
-                    </div>
-
-                    <div class="thumbnail-grid">
-                        <div v-for="(img, index) in result.imgurl" :key="index" class="thumbnail" :class="{ active: currentImage === img }" @click="currentImage = img">
-                            <img :src="img" :alt="'缩略图' + (index + 1)" />
-                        </div>
                     </div>
                 </div>
             </div>

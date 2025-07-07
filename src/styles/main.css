@@ -205,99 +205,37 @@ header {
     box-shadow: 0 5px 15px rgba(255, 36, 66, 0.2);
 }
 
+/* 结果区域布局优化 */
 .result-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 30px;
 }
 
-.post-info {
-    background: var(--gray);
-    border-radius: 15px;
-    padding: 25px;
-}
-
-.author-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid var(--border);
-}
-
-.author-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid var(--light);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.author-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.author-details h3 {
-    font-size: 1.3rem;
-    margin-bottom: 5px;
-}
-
-.author-details p {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.post-details {
-    margin-bottom: 25px;
-}
-
-.post-details h4 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: var(--primary);
-}
-
-.post-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.post-desc {
-    color: #555;
-    line-height: 1.7;
-    font-size: 1rem;
-}
-
+/* 图片区域（突出显示） */
 .images-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    background: var(--light);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
 .main-image {
-    background: var(--gray);
-    border-radius: 15px;
-    overflow: hidden;
-    height: 350px;
+    height: 450px;
     position: relative;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 }
 
 .main-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    background: #f8f8f8;
     transition: all 0.5s ease;
 }
 
 .main-image:hover img {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .download-btn {
@@ -307,37 +245,42 @@ header {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 36, 66, 0.3);
 }
 
 .download-btn:hover {
     background: #e01e3c;
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(255, 36, 66, 0.3);
+    box-shadow: 0 7px 20px rgba(255, 36, 66, 0.4);
 }
 
 .thumbnail-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-top: 1px solid var(--border);
 }
 
 .thumbnail {
-    background: var(--gray);
-    border-radius: 10px;
+    aspect-ratio: 1/1;
+    border-radius: 8px;
     overflow: hidden;
-    height: 100px;
     cursor: pointer;
     position: relative;
     transition: all 0.3s ease;
+    background: #f0f0f0;
+    border: 2px solid transparent;
 }
 
 .thumbnail img {
@@ -352,7 +295,73 @@ header {
 }
 
 .thumbnail.active {
-    border: 3px solid var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* 用户信息区域（弱化显示） */
+.post-info {
+    background: var(--gray);
+    border-radius: 15px;
+    padding: 25px;
+    opacity: 0.9;
+    border: 1px solid var(--border);
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.author-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.author-details h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.author-details p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.post-details {
+    margin-bottom: 15px;
+}
+
+.post-details h4 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #777;
+}
+
+.post-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.post-desc {
+    color: #555;
+    line-height: 1.7;
+    font-size: 0.95rem;
 }
 
 footer {
@@ -363,22 +372,46 @@ footer {
     background: var(--gray);
 }
 
+/* 移动端适配 */
 @media (max-width: 768px) {
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
     .result-content {
-        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .images-section {
+        order: 1;
+    }
+
+    .post-info {
+        order: 2;
+    }
+
+    .main-image {
+        height: 350px;
+    }
+
+    .thumbnail-grid {
+        grid-template-columns: repeat(4, 1fr);
+        padding: 15px;
+        gap: 10px;
     }
 
     .input-box {
         flex-direction: column;
     }
 
+    .input-box input {
+        padding: 15px 10px;
+    }
+
     .input-box button {
         padding: 18px;
         justify-content: center;
-    }
-
-    .thumbnail-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 
     header {
@@ -400,5 +433,34 @@ footer {
     .download-all {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-image {
+        height: 280px;
+    }
+
+    .thumbnail-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .download-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .post-info {
+        padding: 20px;
+    }
+
+    .input-section {
+        padding: 30px 20px;
+    }
+
+    .result-section {
+        padding: 20px;
     }
 }
