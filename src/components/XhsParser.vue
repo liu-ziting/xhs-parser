@@ -12,13 +12,20 @@
 
         <div class="input-section">
             <div class="input-box">
-                <div class="input-wrapper">
-                    <input type="text" v-model="url" placeholder="粘贴小红书笔记链接" @keyup.enter="parseUrl" />
-                    <button v-if="url" class="clear-btn" @click="url = ''">
+                <div class="textarea-wrapper">
+                    <textarea
+                        v-model="url"
+                        placeholder="在此处粘贴小红书分享链接或者小红书笔记地址..."
+                        @keyup.enter="parseUrl"
+                        rows="1"
+                        ref="textarea"
+                        @input="autoResize"
+                    ></textarea>
+                    <!-- <button v-if="url" class="clear-btn" @click="url = ''">
                         <i class="fas fa-times"></i>
-                    </button>
+                    </button> -->
+                    <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
-                <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 立即解析</button>
             </div>
 
             <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频</div>
@@ -310,6 +317,15 @@ export default defineComponent({
             }
         }
 
+        const textarea = ref<HTMLTextAreaElement | null>(null)
+
+        const autoResize = () => {
+            if (textarea.value) {
+                textarea.value.style.height = 'auto'
+                textarea.value.style.height = `${textarea.value.scrollHeight}px`
+            }
+        }
+
         return {
             url,
             loading,
@@ -321,7 +337,9 @@ export default defineComponent({
             parseUrl,
             downloadImage,
             downloadAll,
-            downloadVideo
+            downloadVideo,
+            textarea,
+            autoResize
         }
     }
 })
