@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, defineProps, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 interface TabItem {
@@ -18,14 +18,15 @@ interface TabItem {
     icon: string
 }
 
-const props = defineProps<{ customTabs?: TabItem[] }>()
+const props = defineProps<{ customTabs?: TabItem[]; activeColor?: string }>()
 
 const router = useRouter()
 const indicator = ref<HTMLDivElement | null>(null)
 
 const defaultTabs: TabItem[] = [
-    { to: '/', label: '小红书解析', icon: 'fab fa-reddit-alien' },
-    { to: '/douyin', label: '抖音解析', icon: 'fab fa-tiktok' }
+    { to: '/', label: '小红书', icon: 'fab fa-reddit-alien' },
+    { to: '/douyin', label: '抖音', icon: 'fab fa-tiktok' },
+    { to: '/pipixia', label: '皮皮虾', icon: 'fas fa-hippo' }
 ]
 
 const tabs = computed(() => props.customTabs ?? defaultTabs)
@@ -35,8 +36,21 @@ const updateIndicatorPosition = () => {
     if (activeElement && indicator.value) {
         indicator.value.style.left = `${activeElement.offsetLeft}px`
         indicator.value.style.width = `${activeElement.offsetWidth}px`
+        // 设置指示条颜色
+        if (props.activeColor) {
+            indicator.value.style.background = props.activeColor
+        } else {
+            indicator.value.style.background = 'var(--primary-color)'
+        }
     }
 }
+
+watch(
+    () => props.activeColor,
+    () => {
+        updateIndicatorPosition()
+    }
+)
 
 onMounted(() => {
     updateIndicatorPosition()
@@ -46,6 +60,10 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('resize', updateIndicatorPosition)
 })
+</script>
+
+<script lang="ts">
+export default {}
 </script>
 
 <style scoped>
@@ -65,7 +83,7 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px;
+    padding: 12px;
     color: #6c757d;
     font-weight: 500;
     text-decoration: none;
@@ -86,6 +104,7 @@ onUnmounted(() => {
 
 .tab-item.active {
     color: #fff;
+    /* 动态色由指示条背景决定 */
 }
 
 .tab-indicator {
@@ -103,5 +122,13 @@ onUnmounted(() => {
 .tab-item:not(.active):hover {
     color: #495057;
     background: rgba(255, 255, 255, 0.7);
+}
+
+.tab {
+    /* ...existing code... */
+}
+.tab.active {
+    color: var(--tab-active-color, var(--primary-color));
+    background: var(--tab-active-bg, transparent);
 }
 </style>

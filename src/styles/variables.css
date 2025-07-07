@@ -1,0 +1,7 @@
+:root {
+    --primary-color: linear-gradient(90deg, #ff2442 0%, #ff7b00 100%);
+    --bg-gradient: linear-gradient(90deg, #161823 0%, #3a3a4d 100%);
+    --border-radius: 8px;
+    --font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    --secondary-color: linear-gradient(90deg, #ff506c, #ff808b);
+}

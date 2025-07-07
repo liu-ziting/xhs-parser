@@ -1,0 +1,14 @@
+button,
+.parse-btn,
+.download-all,
+.download-btn {
+    border-radius: var(--border-radius);
+    font-family: var(--font-family);
+    transition: background 0.2s;
+}
+
+input,
+textarea {
+    border-radius: var(--border-radius);
+    font-family: var(--font-family);
+}

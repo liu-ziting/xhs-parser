@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import XhsParser from '../components/XhsParser.vue'
 import DyParser from '../components/DyParser.vue'
+import PipixiaParser from '../components/PipixiaParser.vue'
 
 const routes = [
     {
@@ -12,6 +13,11 @@ const routes = [
         path: '/douyin',
         name: 'DyParser',
         component: DyParser
+    },
+    {
+        path: '/pipixia',
+        name: 'PipixiaParser',
+        component: PipixiaParser
     }
 ]
 
