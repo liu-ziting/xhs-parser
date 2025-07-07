@@ -83,26 +83,39 @@ header {
     margin-bottom: 25px;
 }
 
-.input-box input {
+.input-wrapper {
+    position: relative;
     flex: 1;
-    padding: 18px 25px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 18px 40px 18px 25px;
     border: 2px solid var(--border);
     border-radius: 15px;
     font-size: 1.1rem;
     transition: all 0.3s ease;
 }
 
-.input-box input:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 5px 15px rgba(255, 36, 66, 0.1);
-}
-
-.input-box input::placeholder {
+.clear-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
     color: #aaa;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
-.input-box button {
+.clear-btn:hover {
+    color: var(--primary);
+}
+
+.parse-btn {
     padding: 0 40px;
     background: var(--primary);
     color: var(--light);
@@ -117,7 +130,7 @@ header {
     gap: 10px;
 }
 
-.input-box button:hover {
+.parse-btn:hover {
     background: #e01e3c;
     transform: translateY(-3px);
     box-shadow: 0 7px 20px rgba(255, 36, 66, 0.3);
@@ -378,6 +391,25 @@ footer {
     bottom: 0;
 }
 
+.video-section {
+    margin-bottom: 30px;
+}
+
+.main-video {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.main-video video {
+    width: 100%;
+    display: block;
+    background: #000;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
     body {
@@ -415,14 +447,12 @@ footer {
         flex-direction: column;
     }
 
-    .input-box input {
-        padding: 15px 10px;
-    }
-
-    .input-box button {
-        padding: 18px;
+    .parse-btn {
+        padding: 10px 0;
         justify-content: center;
     }
+
+
 
     header {
         flex-direction: column;

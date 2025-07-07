@@ -5,18 +5,23 @@
                 <i class="fab fa-reddit-alien"></i>
             </div>
             <div class="header-text">
-                <h1>小红书图片解析工具</h1>
-                <p>一键提取小红书笔记中的高清图片</p>
+                <h1>小红书解析工具</h1>
+                <p>一键提取小红书笔记中的高清图片/视频</p>
             </div>
         </header>
 
         <div class="input-section">
             <div class="input-box">
-                <input type="text" v-model="url" placeholder="粘贴小红书笔记链接" @keyup.enter="parseUrl" />
-                <button @click="parseUrl"><i class="fas fa-bolt"></i> 立即解析</button>
+                <div class="input-wrapper">
+                    <input type="text" v-model="url" placeholder="粘贴小红书笔记链接" @keyup.enter="parseUrl" />
+                    <button v-if="url" class="clear-btn" @click="url = ''">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 立即解析</button>
             </div>
 
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片</div>
+            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频</div>
         </div>
 
         <div v-if="loading" class="loading">
@@ -32,12 +37,23 @@
         <div v-if="result" class="result-section">
             <div class="result-header">
                 <h2>解析结果</h2>
-                <button class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button>
+                <button v-if="isVideo" class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
+                <button v-else class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button>
             </div>
 
             <div class="result-content">
+                <!-- 视频展示区域 -->
+                <div v-if="isVideo" class="video-section">
+                    <div class="main-video">
+                        <video controls :poster="result.cover">
+                            <source :src="result.url" type="video/mp4" />
+                            您的浏览器不支持 HTML5 视频标签。
+                        </video>
+                    </div>
+                </div>
+
                 <!-- 图片展示区域（突出显示） -->
-                <div class="images-section">
+                <div v-else class="images-section">
                     <div class="main-image">
                         <img :src="currentImage" referrerpolicy="no-referrer" alt="笔记主图" />
                         <button class="download-btn" @click="downloadImage(currentImage, result.title + '-主图.jpg')"><i class="fas fa-download"></i> 下载大图</button>
@@ -58,7 +74,7 @@
                         </div>
                         <div class="author-details">
                             <h3>{{ result.author }}</h3>
-                            <p>ID: {{ result.userId }}</p>
+                            <p>ID: {{ result.userId || result.authorID }}</p>
                         </div>
                     </div>
 
@@ -74,25 +90,27 @@
         </div>
 
         <footer>
-            <p>© 2025 小红书图片解析工具 | 本工具仅用于学习交流，请勿用于商业用途</p>
-            <p>提示：下载图片请遵守小红书平台规定和版权要求</p>
+            <p>© 2025 小红书图片解析工具 | Created by Liuziting | 仅供学习交流使用</p>
+            <p>请遵守小红书平台规定和版权要求，勿用于商业用途</p>
         </footer>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import axios, { AxiosError } from 'axios'
 
 // 定义API返回数据类型
 interface XhsData {
     author: string
-    userId: string
+    userId?: string
+    authorID?: string
     title: string
     desc: string
     avatar: string
     cover: string
-    imgurl: string[]
+    imgurl?: string[]
+    url?: string
 }
 
 interface ApiResponse {
@@ -121,8 +139,12 @@ export default defineComponent({
         const result = ref<XhsData | null>(null)
         const currentImage = ref('')
 
+        // 计算属性：判断是否是视频
+        const isVideo = computed(() => {
+            return result.value && result.value.url && !result.value.imgurl
+        })
+
         // 解析URL
-        // 在parseUrl方法中添加URL提取逻辑
         const parseUrl = async () => {
             const inputText = url.value.trim()
 
@@ -173,7 +195,9 @@ export default defineComponent({
 
                 if (response.data.code === 200) {
                     result.value = response.data.data
-                    currentImage.value = response.data.data.cover
+                    if (response.data.data.imgurl) {
+                        currentImage.value = response.data.data.cover
+                    }
                 } else {
                     error.value = true
                     errorMessage.value = response.data.msg || '解析失败'
@@ -230,9 +254,47 @@ export default defineComponent({
             }
         }
 
+        // 下载视频
+        const downloadVideo = async () => {
+            if (!result.value || !result.value.url) return
+
+            try {
+                const videoUrl = result.value.url
+                const response = await fetch(videoUrl)
+                const blob = await response.blob()
+                const blobUrl = window.URL.createObjectURL(blob)
+
+                const link = document.createElement('a')
+                link.href = blobUrl
+                link.download = `${result.value.title}.mp4` || 'xhs-video.mp4'
+
+                document.body.appendChild(link)
+                link.click()
+
+                // 清理
+                setTimeout(() => {
+                    document.body.removeChild(link)
+                    window.URL.revokeObjectURL(blobUrl)
+                }, 100)
+            } catch (error) {
+                console.error('视频下载失败:', error)
+                error.value = true
+                errorMessage.value = '视频下载失败，请重试或检查网络'
+
+                // 回退到直接链接方法
+                const fallbackLink = document.createElement('a')
+                fallbackLink.href = result.value.url
+                fallbackLink.download = `${result.value.title}.mp4` || 'xhs-video.mp4'
+                fallbackLink.target = '_blank'
+                document.body.appendChild(fallbackLink)
+                fallbackLink.click()
+                document.body.removeChild(fallbackLink)
+            }
+        }
+
         // 下载全部图片
         const downloadAll = async () => {
-            if (!result.value) return
+            if (!result.value || !result.value.imgurl) return
 
             for (let i = 0; i < result.value.imgurl.length; i++) {
                 const img = result.value.imgurl[i]
@@ -255,9 +317,11 @@ export default defineComponent({
             errorMessage,
             result,
             currentImage,
+            isVideo,
             parseUrl,
             downloadImage,
-            downloadAll
+            downloadAll,
+            downloadVideo
         }
     }
 })
