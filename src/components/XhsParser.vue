@@ -12,7 +12,7 @@
 
         <div class="input-section">
             <div class="input-box">
-                <input type="text" v-model="url" placeholder="小红书笔记链接，例如：http://xhslink.com/a/ibIhd5Wfzr1eb" @keyup.enter="parseUrl" />
+                <input type="text" v-model="url" placeholder="粘贴小红书笔记链接或包含链接的整段文字..." @keyup.enter="parseUrl" />
                 <button @click="parseUrl"><i class="fas fa-bolt"></i> 立即解析</button>
             </div>
 
@@ -112,7 +112,7 @@ export default defineComponent({
         })
 
         // 响应式变量
-        const url = ref('http://xhslink.com/a/ibIhd5Wfzr1eb')
+        const url = ref('')
         const loading = ref(false)
         const error = ref(false)
         const errorMessage = ref('')
@@ -120,16 +120,37 @@ export default defineComponent({
         const currentImage = ref('')
 
         // 解析URL
+        // 在parseUrl方法中添加URL提取逻辑
         const parseUrl = async () => {
-            if (!url.value.trim()) {
+            const inputText = url.value.trim()
+
+            if (!inputText) {
                 error.value = true
                 errorMessage.value = '请输入小红书笔记链接'
                 return
             }
 
+            // 尝试从文本中提取URL
+            let extractedUrl = ''
             try {
-                // 验证URL格式
-                new URL(url.value.trim())
+                // 使用正则表达式匹配URL
+                const urlRegex = /(https?:\/\/[^\s]+)/g
+                const matches = inputText.match(urlRegex)
+
+                if (matches && matches.length > 0) {
+                    // 取第一个匹配的URL
+                    extractedUrl = matches[0]
+
+                    // 处理可能的多余字符（如中文标点符号）
+                    extractedUrl = extractedUrl.replace(/[。，、；！？]/g, '')
+
+                    // 验证URL格式
+                    new URL(extractedUrl)
+                } else {
+                    error.value = true
+                    errorMessage.value = '未找到有效链接，请检查后重试'
+                    return
+                }
             } catch (e) {
                 error.value = true
                 errorMessage.value = '链接格式不正确，请检查后重试'
@@ -141,14 +162,13 @@ export default defineComponent({
             result.value = null
 
             try {
-                // 调用API
+                // 使用提取的URL调用API
                 const response = await api.get<ApiResponse>('', {
                     params: {
-                        url: url.value.trim()
+                        url: extractedUrl
                     }
                 })
 
-                // 即使服务器返回500，只要code是200就认为是成功的
                 if (response.data.code === 200) {
                     result.value = response.data.data
                     currentImage.value = response.data.data.cover
@@ -160,13 +180,10 @@ export default defineComponent({
                 error.value = true
                 const axiosError = err as AxiosError
                 if (axiosError.response) {
-                    // 服务器返回了错误响应
                     errorMessage.value = `服务器错误: ${axiosError.response.status}`
                 } else if (axiosError.request) {
-                    // 请求已发出但没有收到响应
                     errorMessage.value = '网络错误，请检查您的连接'
                 } else {
-                    // 请求配置出错
                     errorMessage.value = '请求配置错误'
                 }
                 console.error(err)
