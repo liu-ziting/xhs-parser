@@ -47,6 +47,8 @@
                     :title="result.title"
                     :desc="result.desc"
                     :avatar="result.avatar"
+                    titleLabel="笔记标题"
+                    descLabel="笔记描述"
                 />
             </div>
         </div>
@@ -56,9 +58,9 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { Tabs, Loading } from '@/components/common'
-import ImageSection from './XhsParser/ImageSection.vue'
-import VideoSection from './XhsParser/VideoSection.vue'
-import PostInfo from './XhsParser/PostInfo.vue'
+import ImageSection from '@/components/common/ImageSection.vue'
+import VideoSection from '@/components/common/VideoSection.vue'
+import PostInfo from '@/components/common/PostInfo.vue'
 import { fetchXhsData } from '@/utils/api'
 import { downloadFile } from '@/utils/download'
 import type { XhsData } from '@/types/xhs'
@@ -141,7 +143,13 @@ const parseUrl = async () => {
 }
 
 const downloadImage = async (imgUrl: string, filename: string) => {
-    await downloadFile(imgUrl, filename)
+    const a = document.createElement('a')
+    a.href = imgUrl
+    a.download = filename
+    a.target = '_blank'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
 }
 
 const downloadVideo = async () => {

@@ -6,13 +6,16 @@
                 您的浏览器不支持 HTML5 视频标签。
             </video>
         </div>
+        <button v-if="showDownload" class="download-all" @click="onDownload"><i class="fas fa-download"></i> 下载视频</button>
     </div>
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
-const props = defineProps<{ url: string; cover: string }>()
+const props = defineProps<{
+    url: string
+    cover: string
+    showDownload?: boolean
+}>()
 const emit = defineEmits(['download'])
-</script>
-<script lang="ts">
-export default {}
+const onDownload = () => emit('download')
 </script>

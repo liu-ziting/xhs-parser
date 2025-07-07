@@ -30,7 +30,7 @@
                 <button class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
             </div>
             <div class="result-content">
-                <VideoSection v-if="result.url && result.cover" :url="result.url" :cover="result.cover" @download="downloadVideo" />
+                <VideoSection v-if="result.url && result.cover" :url="result.url" :cover="result.cover" :showDownload="false" @download="downloadVideo" />
                 <PostInfo
                     v-if="result"
                     :author="result.author"
@@ -39,6 +39,8 @@
                     :title="result.title"
                     :desc="result.desc"
                     :avatar="result.avatar"
+                    titleLabel="视频标题"
+                    descLabel="视频描述"
                 />
             </div>
         </div>
@@ -47,8 +49,8 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { Tabs, Loading } from '@/components/common'
-import VideoSection from './PipixiaParser/VideoSection.vue'
-import PostInfo from './PipixiaParser/PostInfo.vue'
+import VideoSection from '@/components/common/VideoSection.vue'
+import PostInfo from '@/components/common/PostInfo.vue'
 import { fetchPipixiaData } from '@/utils/pipixiaApi'
 import { downloadFile } from '@/utils/download'
 import type { PipixiaData } from '@/types/pipixia'

@@ -30,7 +30,7 @@
                 <button class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
             </div>
             <div class="result-content">
-                <VideoSection v-if="result.url && result.cover" :url="result.url" :cover="result.cover" @download="downloadVideo" />
+                <VideoSection v-if="result.url && result.cover" :url="result.url" :cover="result.cover" :showDownload="false" @download="downloadVideo" />
                 <PostInfo
                     v-if="result"
                     :author="result.author"
@@ -39,6 +39,8 @@
                     :title="result.title"
                     :desc="result.desc"
                     :avatar="result.avatar"
+                    titleLabel="视频标题"
+                    descLabel="视频描述"
                 />
             </div>
         </div>
@@ -48,8 +50,8 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { Tabs, Loading } from '@/components/common'
-import VideoSection from './DyParser/VideoSection.vue'
-import PostInfo from './DyParser/PostInfo.vue'
+import VideoSection from '@/components/common/VideoSection.vue'
+import PostInfo from '@/components/common/PostInfo.vue'
 import { fetchDouyinData } from '@/utils/douyinApi'
 import { downloadFile } from '@/utils/download'
 import type { DouyinData } from '@/types/douyin'

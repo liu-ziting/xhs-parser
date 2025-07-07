@@ -10,20 +10,23 @@
             </div>
         </div>
         <div class="post-details">
-            <h4>笔记标题</h4>
+            <h4>{{ titleLabel }}</h4>
             <p class="post-title">{{ title }}</p>
-            <h4>笔记描述</h4>
+            <h4>{{ descLabel }}</h4>
             <p class="post-desc">{{ desc }}</p>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { defineProps } from 'vue'
-const props = defineProps<{ author: string; userId?: string; authorID?: string; title: string; desc: string; avatar: string }>()
+const props = defineProps<{
+    author: string
+    userId?: string
+    authorID?: string
+    title: string
+    desc: string
+    avatar: string
+    titleLabel?: string
+    descLabel?: string
+}>()
 </script>
-
-<script lang="ts">
-export default {}
-</script>
-
-<style scoped></style>
