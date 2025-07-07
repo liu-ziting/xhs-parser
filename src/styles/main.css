@@ -25,12 +25,15 @@ body {
 }
 
 .container {
+    position: relative;
     max-width: 1000px;
     margin: 0 auto;
+    min-height: calc(100vh - 40px);
     background: var(--light);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 50px rgba(255, 36, 66, 0.15);
+    padding-bottom: 100px;
 }
 
 header {
@@ -365,11 +368,14 @@ header {
 }
 
 footer {
+    width: 100%;
     text-align: center;
     padding: 30px;
     color: #666;
     font-size: 0.9rem;
     background: var(--gray);
+    position: absolute;
+    bottom: 0;
 }
 
 /* 移动端适配 */
@@ -377,6 +383,10 @@ footer {
     body {
         padding: 0;
         margin: 0;
+    }
+
+    .container {
+        border-radius: 0;
     }
 
     .result-content {
