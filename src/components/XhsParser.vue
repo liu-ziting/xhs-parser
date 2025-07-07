@@ -39,13 +39,13 @@
                 <!-- 图片展示区域（突出显示） -->
                 <div class="images-section">
                     <div class="main-image">
-                        <img :src="currentImage" alt="笔记主图" />
+                        <img :src="currentImage" referrerpolicy="no-referrer" alt="笔记主图" />
                         <button class="download-btn" @click="downloadImage(currentImage, result.title + '-主图.jpg')"><i class="fas fa-download"></i> 下载大图</button>
                     </div>
 
                     <div class="thumbnail-grid">
                         <div v-for="(img, index) in result.imgurl" :key="index" class="thumbnail" :class="{ active: currentImage === img }" @click="currentImage = img">
-                            <img :src="img" :alt="'缩略图' + (index + 1)" />
+                            <img :src="img" :alt="'缩略图' + (index + 1)" referrerpolicy="no-referrer" />
                         </div>
                     </div>
                 </div>
