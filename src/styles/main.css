@@ -127,7 +127,7 @@ header {
     padding-bottom: 60px;
     border: 2px solid var(--border);
     border-radius: 15px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
     resize: none;
     overflow-y: hidden;
