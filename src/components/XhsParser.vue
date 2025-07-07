@@ -17,7 +17,7 @@
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
             </div>
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频</div>
+            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频，长按保存或右击另存为！</div>
         </div>
         <Loading v-if="loading" text="正在解析链接，请稍候..." />
         <div v-if="error" class="error">
@@ -27,8 +27,8 @@
         <div v-if="result" class="result-section" ref="resultSectionRef">
             <div class="result-header">
                 <h2>解析结果</h2>
-                <button v-if="isVideo" class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
-                <button v-else class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button>
+                <!-- <button v-if="isVideo" class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button> -->
+                <!-- <button v-else class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button> -->
             </div>
             <div class="result-content">
                 <VideoSection v-if="isVideo && result.url && result.cover" :url="result.url" :cover="result.cover" @download="downloadVideo" />
