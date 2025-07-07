@@ -7,6 +7,7 @@
     --dark: #333333;
     --gray: #f5f5f5;
     --border: #e0e0e0;
+    --bg-gradient: linear-gradient(135deg, #25F4EE, #FE2C55);
 }
 
 * {
@@ -28,7 +29,7 @@ body {
     position: relative;
     max-width: 1000px;
     margin: 0 auto;
-    min-height: calc(100vh - 40px);
+    min-height: calc(100vh - 150px);
     background: var(--light);
     border-radius: 20px;
     overflow: hidden;
@@ -446,8 +447,6 @@ footer {
     padding: 30px;
     color: #666;
     font-size: 0.9rem;
-    background: var(--gray);
-    position: absolute;
     bottom: 0;
 }
 

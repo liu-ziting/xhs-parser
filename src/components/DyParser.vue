@@ -2,27 +2,24 @@
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fab fa-reddit-alien"></i>
+                <i class="fab fa-tiktok"></i>
             </div>
             <div class="header-text">
-                <h1>小红书无水印解析工具</h1>
-                <p>一键提取小红书笔记中的高清图片/视频</p>
+                <h1>抖音无水印视频解析工具</h1>
+                <p>一键提取抖音无水印高清视频</p>
             </div>
         </header>
 
         <div class="input-section">
+            <Tabs />
             <div class="input-box">
                 <div class="textarea-wrapper">
-                    <Tabs />
-                    <textarea v-model="url" placeholder="在此处粘贴小红书分享链接" @keyup.enter="parseUrl" rows="1" ref="textarea" @input="autoResize"></textarea>
-                    <!-- <button v-if="url" class="clear-btn" @click="url = ''">
-                        <i class="fas fa-times"></i>
-                    </button> -->
+                    <textarea v-model="url" placeholder="在此处粘贴抖音分享链接" @keyup.enter="parseUrl" rows="1" ref="textarea" @input="autoResize"></textarea>
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
             </div>
 
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频</div>
+            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制抖音视频分享链接，粘贴到上方输入框，点击解析按钮获取高清无水印视频</div>
         </div>
 
         <div v-if="loading" class="loading">
@@ -38,13 +35,12 @@
         <div v-if="result" class="result-section">
             <div class="result-header">
                 <h2>解析结果</h2>
-                <button v-if="isVideo" class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
-                <button v-else class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button>
+                <button class="download-all" @click="downloadVideo"><i class="fas fa-download"></i> 下载视频</button>
             </div>
 
             <div class="result-content">
                 <!-- 视频展示区域 -->
-                <div v-if="isVideo" class="video-section">
+                <div class="video-section">
                     <div class="main-video">
                         <video controls :poster="result.cover">
                             <source :src="result.url" type="video/mp4" />
@@ -53,21 +49,7 @@
                     </div>
                 </div>
 
-                <!-- 图片展示区域（突出显示） -->
-                <div v-else class="images-section">
-                    <div class="main-image">
-                        <img :src="currentImage" referrerpolicy="no-referrer" alt="笔记主图" />
-                        <button class="download-btn" @click="downloadImage(currentImage, result.title + '-主图.jpg')"><i class="fas fa-download"></i> 下载大图</button>
-                    </div>
-
-                    <div class="thumbnail-grid">
-                        <div v-for="(img, index) in result.imgurl" :key="index" class="thumbnail" :class="{ active: currentImage === img }" @click="currentImage = img">
-                            <img :src="img" :alt="'缩略图' + (index + 1)" referrerpolicy="no-referrer" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 用户信息区域（弱化显示） -->
+                <!-- 用户信息区域 -->
                 <div class="post-info">
                     <div class="author-info">
                         <div class="author-avatar">
@@ -80,10 +62,10 @@
                     </div>
 
                     <div class="post-details">
-                        <h4>笔记标题</h4>
+                        <h4>视频标题</h4>
                         <p class="post-title">{{ result.title }}</p>
 
-                        <h4>笔记描述</h4>
+                        <h4>视频描述</h4>
                         <p class="post-desc">{{ result.desc }}</p>
                     </div>
                 </div>
@@ -97,7 +79,7 @@ import { defineComponent, ref, computed } from 'vue'
 import axios, { AxiosError } from 'axios'
 
 // 定义API返回数据类型
-interface XhsData {
+interface DouyinData {
     author: string
     userId?: string
     authorID?: string
@@ -105,24 +87,22 @@ interface XhsData {
     desc: string
     avatar: string
     cover: string
-    imgurl?: string[]
-    url?: string
+    url: string
 }
 
 interface ApiResponse {
     code: number
     msg: string
-    data: XhsData
+    data: DouyinData
 }
 
 export default defineComponent({
-    name: 'XhsParser',
+    name: 'DouyinParser',
     setup() {
-        // 创建自定义axios实例，忽略500错误
+        // 创建自定义axios实例
         const api = axios.create({
-            baseURL: import.meta.env.VITE_API_URL,
+            baseURL: 'https://api.bugpk.com/api/douyin',
             validateStatus: function (status) {
-                // 接受200-299和500状态码
                 return (status >= 200 && status < 300) || status === 500
             }
         })
@@ -132,13 +112,7 @@ export default defineComponent({
         const loading = ref(false)
         const error = ref(false)
         const errorMessage = ref('')
-        const result = ref<XhsData | null>(null)
-        const currentImage = ref('')
-
-        // 计算属性：判断是否是视频
-        const isVideo = computed(() => {
-            return result.value && result.value.url && !result.value.imgurl
-        })
+        const result = ref<DouyinData | null>(null)
 
         // 解析URL
         const parseUrl = async () => {
@@ -146,7 +120,7 @@ export default defineComponent({
 
             if (!inputText) {
                 error.value = true
-                errorMessage.value = '请输入小红书笔记链接'
+                errorMessage.value = '请输入抖音视频链接'
                 return
             }
 
@@ -191,9 +165,6 @@ export default defineComponent({
 
                 if (response.data.code === 200) {
                     result.value = response.data.data
-                    if (response.data.data.imgurl) {
-                        currentImage.value = response.data.data.cover
-                    }
                 } else {
                     error.value = true
                     errorMessage.value = response.data.msg || '解析失败'
@@ -214,42 +185,6 @@ export default defineComponent({
             }
         }
 
-        // 下载单张图片
-        const downloadImage = async (imgUrl: string, filename: string) => {
-            try {
-                // 使用fetch获取图片数据
-                const response = await fetch(imgUrl)
-                const blob = await response.blob()
-                const blobUrl = window.URL.createObjectURL(blob)
-
-                const link = document.createElement('a')
-                link.href = blobUrl
-                link.download = filename || 'xhs-image.jpg'
-
-                document.body.appendChild(link)
-                link.click()
-
-                // 清理
-                setTimeout(() => {
-                    document.body.removeChild(link)
-                    window.URL.revokeObjectURL(blobUrl)
-                }, 100)
-            } catch (error) {
-                console.error('下载失败:', error)
-                error.value = true
-                errorMessage.value = '图片下载失败，请重试或检查网络'
-
-                // 回退到直接链接方法
-                const fallbackLink = document.createElement('a')
-                fallbackLink.href = imgUrl
-                fallbackLink.download = filename || 'xhs-image.jpg'
-                fallbackLink.target = '_blank'
-                document.body.appendChild(fallbackLink)
-                fallbackLink.click()
-                document.body.removeChild(fallbackLink)
-            }
-        }
-
         // 下载视频
         const downloadVideo = async () => {
             if (!result.value || !result.value.url) return
@@ -262,7 +197,7 @@ export default defineComponent({
 
                 const link = document.createElement('a')
                 link.href = blobUrl
-                link.download = `${result.value.title}.mp4` || 'xhs-video.mp4'
+                link.download = `${result.value.title}.mp4` || 'douyin-video.mp4'
 
                 document.body.appendChild(link)
                 link.click()
@@ -280,29 +215,11 @@ export default defineComponent({
                 // 回退到直接链接方法
                 const fallbackLink = document.createElement('a')
                 fallbackLink.href = result.value.url
-                fallbackLink.download = `${result.value.title}.mp4` || 'xhs-video.mp4'
+                fallbackLink.download = `${result.value.title}.mp4` || 'douyin-video.mp4'
                 fallbackLink.target = '_blank'
                 document.body.appendChild(fallbackLink)
                 fallbackLink.click()
                 document.body.removeChild(fallbackLink)
-            }
-        }
-
-        // 下载全部图片
-        const downloadAll = async () => {
-            if (!result.value || !result.value.imgurl) return
-
-            for (let i = 0; i < result.value.imgurl.length; i++) {
-                const img = result.value.imgurl[i]
-                await new Promise(resolve => {
-                    setTimeout(
-                        async () => {
-                            await downloadImage(img, `${result.value!.title}-${i + 1}.jpg`)
-                            resolve(null)
-                        },
-                        i === 0 ? 0 : 1000
-                    ) // 第一个立即下载，后面的间隔1秒
-                })
             }
         }
 
@@ -321,11 +238,7 @@ export default defineComponent({
             error,
             errorMessage,
             result,
-            currentImage,
-            isVideo,
             parseUrl,
-            downloadImage,
-            downloadAll,
             downloadVideo,
             textarea,
             autoResize
@@ -333,3 +246,8 @@ export default defineComponent({
     }
 })
 </script>
+<style scoped>
+header {
+    background: var(--bg-gradient);
+}
+</style>
