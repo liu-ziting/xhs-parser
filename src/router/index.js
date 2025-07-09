@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import XhsParser from '../components/XhsParser.vue'
 import DyParser from '../components/DyParser.vue'
 import PipixiaParser from '../components/PipixiaParser.vue'
+import NeteaseParser from '../components/NeteaseParser.vue'
 
 const routes = [
     {
@@ -18,6 +19,11 @@ const routes = [
         path: '/pipixia',
         name: 'PipixiaParser',
         component: PipixiaParser
+    },
+    {
+        path: '/netease',
+        name: 'NeteaseParser',
+        component: NeteaseParser
     }
 ]
 

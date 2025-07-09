@@ -26,7 +26,8 @@ const indicator = ref<HTMLDivElement | null>(null)
 const defaultTabs: TabItem[] = [
     { to: '/', label: '小红书', icon: 'fab fa-reddit-alien' },
     { to: '/douyin', label: '抖音', icon: 'fab fa-tiktok' },
-    { to: '/pipixia', label: '皮皮虾', icon: 'fas fa-hippo' }
+    // { to: '/pipixia', label: '皮皮虾', icon: 'fas fa-hippo' },
+    { to: '/netease', label: '网易云', icon: 'fas fa-music' }
 ]
 
 const tabs = computed(() => props.customTabs ?? defaultTabs)
