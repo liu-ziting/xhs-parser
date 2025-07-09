@@ -17,7 +17,11 @@
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
             </div>
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频，长按保存或右击另存为！</div>
+            <div class="note">
+                <i class="fas fa-lightbulb"></i>
+                操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频，长按保存或右击另存为！
+                <ExampleButton :example="xhsExample" @set-example="setExample" />
+            </div>
         </div>
         <Loading v-if="loading" text="正在解析链接，请稍候..." />
         <div v-if="error" class="error">
@@ -57,7 +61,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { Tabs, Loading } from '@/components/common'
+import { Tabs, Loading, ExampleButton } from '@/components/common'
 import ImageSection from '@/components/common/ImageSection.vue'
 import VideoSection from '@/components/common/VideoSection.vue'
 import PostInfo from '@/components/common/PostInfo.vue'
@@ -75,6 +79,12 @@ const result = ref<XhsData | null>(null)
 const currentImage = ref('')
 const textarea = ref<HTMLTextAreaElement | null>(null)
 const resultSectionRef = ref<HTMLElement | null>(null)
+
+const xhsExample = '15 因吹斯汀发布了一篇小红书笔记，快来看吧！ 😆 SN7fWpcevhCN7Q4 😆 http://xhslink.com/a/8AMzWCjxuowgb 复制本条信息，打开【小红书】App查看精彩内容！'
+const setExample = (val: string) => {
+    url.value = val
+    nextTick(autoResize)
+}
 
 const isVideo = computed(() => result.value && result.value.url && !result.value.imgurl)
 

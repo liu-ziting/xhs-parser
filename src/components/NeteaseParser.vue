@@ -17,7 +17,11 @@
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
             </div>
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制网易云音乐分享链接，粘贴到上方输入框，点击解析按钮获取音乐资源！</div>
+            <div class="note">
+                <i class="fas fa-lightbulb"></i>
+                操作说明：复制网易云音乐分享链接，粘贴到上方输入框，点击解析按钮获取音乐资源！
+                <ExampleButton :example="neteaseExample" @set-example="setExample" />
+            </div>
         </div>
         <Loading v-if="loading" text="正在解析链接，请稍候..." />
         <div v-if="error" class="error">
@@ -54,7 +58,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { Tabs, Loading } from '@/components/common'
+import { Tabs, Loading, ExampleButton } from '@/components/common'
 import { fetchNeteaseData } from '@/utils/neteaseApi'
 import { downloadFile } from '@/utils/download'
 import type { NeteaseData } from '@/types/netease'
@@ -66,6 +70,12 @@ const errorMessage = ref('')
 const result = ref<NeteaseData | null>(null)
 const textarea = ref<HTMLTextAreaElement | null>(null)
 const resultSectionRef = ref<HTMLElement | null>(null)
+
+const neteaseExample = '分享古巨基的单曲《必杀技》: https://y.music.163.com/m/song?id=86943&userid=120620367&dlt=0846 (来自@网易云音乐)'
+const setExample = (val: string) => {
+    url.value = val
+    nextTick(autoResize)
+}
 
 const autoResize = () => {
     if (textarea.value) {

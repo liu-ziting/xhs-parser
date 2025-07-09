@@ -17,7 +17,11 @@
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
             </div>
-            <div class="note"><i class="fas fa-lightbulb"></i> 操作说明：复制抖音视频分享链接，粘贴到上方输入框，点击解析按钮获取高清无水印视频，长按保存或右击另存为！</div>
+            <div class="note">
+                <i class="fas fa-lightbulb"></i>
+                操作说明：复制抖音视频分享链接，粘贴到上方输入框，点击解析按钮获取高清无水印视频，长按保存或右击另存为！
+                <ExampleButton :example="dyExample" @set-example="setExample" />
+            </div>
         </div>
         <Loading v-if="loading" text="正在解析链接，请稍候..." />
         <div v-if="error" class="error">
@@ -49,7 +53,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { Tabs, Loading } from '@/components/common'
+import { Tabs, Loading, ExampleButton } from '@/components/common'
 import VideoSection from '@/components/common/VideoSection.vue'
 import PostInfo from '@/components/common/PostInfo.vue'
 import { fetchDouyinData } from '@/utils/douyinApi'
@@ -65,6 +69,13 @@ const errorMessage = ref('')
 const result = ref<DouyinData | null>(null)
 const textarea = ref<HTMLTextAreaElement | null>(null)
 const resultSectionRef = ref<HTMLElement | null>(null)
+
+const dyExample =
+    '6.94 # 毛孩子的日常 # 萌宠出道计划 # 记录猫咪日常 # 猫咪是生活的解药 # 喵星人的日常  https://v.douyin.com/Iws-P9vsI8w/ 复制此链接，打开抖音搜索，直接观看视频！ ban:/ 12/22 E@H.Vl '
+const setExample = (val: string) => {
+    url.value = val
+    nextTick(autoResize)
+}
 
 const autoResize = () => {
     if (textarea.value) {
