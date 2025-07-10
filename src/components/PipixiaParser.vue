@@ -19,7 +19,7 @@
             </div>
             <div class="note">
                 <i class="fas fa-lightbulb"></i>
-                操作说明：复制皮皮虾视频分享链接，粘贴到上方输入框，点击解析按钮获取高清无水印视频，长按保存或右击另存为！
+                操作说明：复制皮皮虾视频分享链接，粘贴到上方输入框，点击解析按钮获取高清无水印视频！
                 <ExampleButton :example="pipixiaExample" @set-example="setExample" />
             </div>
         </div>

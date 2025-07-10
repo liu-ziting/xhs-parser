@@ -19,7 +19,7 @@
             </div>
             <div class="note">
                 <i class="fas fa-lightbulb"></i>
-                操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频，长按保存或右击另存为！
+                操作说明：复制小红书笔记分享链接，粘贴到上方输入框，点击解析按钮获取高清图片或视频！
                 <ExampleButton :example="xhsExample" @set-example="setExample" />
             </div>
         </div>
