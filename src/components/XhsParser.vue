@@ -61,7 +61,7 @@
                     <h2><i class="fas fa-robot"></i> AI投流建议</h2>
                     <button class="get-suggestion-btn" @click="getAiSuggestion" :disabled="aiLoading">
                         <i class="fas" :class="aiLoading ? 'fa-spinner fa-spin' : 'fa-magic'"></i>
-                        {{ aiLoading ? '分析中...' : '获取投流建议' }}
+                        {{ aiLoading ? '分析中...' : '一键获取' }}
                     </button>
                 </div>
                 <div v-if="aiLoading" class="ai-loading">
@@ -242,27 +242,54 @@ const getAiSuggestion = async () => {
                 messages: [
                     {
                         role: 'system',
-                        content: `你是一个小红书投流策略专家，请基于以下笔记内容进行深度分析，并给出精准的投放建议：
-**分析要求**
-1. 内容定位分析：
-   - 解析标题"良渚"与话题标签的关联性
-   - 识别核心内容方向（历史/旅游/生活方式）
-   - 评估当前话题组合的覆盖面和精准度
+                        content: `# 小红书投流策略优化提示词  
+> 角色设定：5 年+投流操盘手，擅长用数据拆解内容与流量漏斗，帮助品牌低成本高转化。  
+> 使用场景：手机端阅读，上下滑动即可看完。
 
-2. 受众画像建议：
-   - 地域定位：根据"良渚古城""苕溪"等关键词推荐重点投放城市
-   - 兴趣标签：结合#后花园#暖村等标签推测潜在用户兴趣圈层
-   - 人群特征：推断可能吸引的年龄层及用户类型（如文化爱好者/亲子游群体）
+---
 
-3. 精准投流策略：
-   ▶ 话题扩展：建议新增3-5个相关话题（例：#杭州周边游 #周末去哪玩）
-   ▶ 人群定向：明确应触达的粉丝画像（地域/兴趣/行为特征）
-   ▶ 竞品关联：推荐可借势的同类热门笔记作者
-   ▶ 投放时机：结合"暖村"标签推荐季节性投放节点
+## 1. 内容定位分析
+- **话题关联性**  
+  量化正文与标签的匹配度（≥80% 为佳），指出冗余或缺口标签。  
+- **核心方向**  
+  8 字以内提炼：主卖点 + 情绪价值。  
+- **话题覆盖**  
+  计算当前标签在「站内搜索指数」+「类目 TOP500」的覆盖率，标出空白区。
 
-4. 优化建议：
-   - 标题增强吸引力的修改方案
-   - 话题标签结构调整建议`
+---
+
+## 2. 受众画像建议
+- **地域定位**  
+  推荐 3 个一线/新一线 + 2 个下沉潜力城市，附 TGI 指数。  
+- **兴趣标签**  
+  5 个高相关圈层（例：#Citywalk #精简护肤）。  
+- **人群特征**  
+  用 3 组人群包描述：  
+  1) 年龄层 / 消费能力 / 行为特征  
+  2) …  
+  3) …
+
+---
+
+## 3. 精准投流策略
+- **话题扩展**  
+  新增 3-5 个「搜索量 5w-20w」「竞争度 <30」的长尾话题，附搜索指数截图链接。  
+- **人群定向**  
+  DMP 人群包：地域 + 兴趣 + 行为（例：近 7 天搜过「早 C 晚 A」）。  
+- **竞品借势**  
+  3 位近 30 日涨粉 ≥5k 的同类作者，爆文链接 + 可复制钩子。  
+- **投放时机**  
+  未来 30 天内的 3 个搜索峰值节点（节日/大促），精确到小时级投放时段。
+
+---
+
+## 4. 优化建议
+- **标题升级**  
+  A/B 两版：钩子 + 关键词 + 悬念，预估 CTR 提升幅度。  
+- **标签重构**  
+  新组合：1 主标签 + 3 长尾 + 1 场景标签，并用一句话说明替换理由。
+
+---`
                     },
                     {
                         role: 'user',
@@ -302,9 +329,9 @@ const formattedSuggestion = computed(() => {
 <style scoped>
 .ai-suggestion-section {
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff2442 0%, #ff6b7a 100%);
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(255, 36, 66, 0.15);
     margin: 20px 0;
 }
 
@@ -323,7 +350,7 @@ const formattedSuggestion = computed(() => {
 
 .suggestion-header h2 i {
     margin-right: 10px;
-    color: #ffd700;
+    color: #ffffff;
 }
 
 .get-suggestion-btn {
@@ -384,7 +411,7 @@ const formattedSuggestion = computed(() => {
 .suggestion-text :deep(h4),
 .suggestion-text :deep(h5),
 .suggestion-text :deep(h6) {
-    color: #667eea;
+    color: #ff2442;
     margin: 20px 0 10px 0;
     font-weight: 600;
 }
@@ -394,12 +421,12 @@ const formattedSuggestion = computed(() => {
 }
 
 .suggestion-text :deep(strong) {
-    color: #667eea;
+    color: #ff2442;
     font-weight: 600;
 }
 
 .suggestion-text :deep(em) {
-    color: #764ba2;
+    color: #ff6b7a;
     font-style: italic;
 }
 
@@ -430,7 +457,7 @@ const formattedSuggestion = computed(() => {
 }
 
 .suggestion-text :deep(blockquote) {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #ff2442;
     padding-left: 15px;
     margin: 15px 0;
     font-style: italic;
