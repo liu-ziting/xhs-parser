@@ -498,7 +498,7 @@ footer {
 
     .thumbnail-grid {
         grid-template-columns: repeat(4, 1fr);
-        padding: 15px 0;
+        padding: 15px 8px;
         gap: 10px;
     }
 
