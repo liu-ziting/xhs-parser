@@ -533,6 +533,12 @@ footer {
         width: 100%;
         justify-content: center;
     }
+
+    .suggestion-text ul,
+    ol {
+        padding-left: 15px !important;
+    }
+
 }
 
 @media (max-width: 480px) {
