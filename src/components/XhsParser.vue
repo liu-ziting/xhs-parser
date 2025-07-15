@@ -55,12 +55,33 @@
                     descLabel="笔记描述"
                 />
             </div>
+            <!-- AI投流建议模块 -->
+            <div v-if="result" class="ai-suggestion-section">
+                <div class="suggestion-header">
+                    <h2><i class="fas fa-robot"></i> AI投流建议</h2>
+                    <button class="get-suggestion-btn" @click="getAiSuggestion" :disabled="aiLoading">
+                        <i class="fas" :class="aiLoading ? 'fa-spinner fa-spin' : 'fa-magic'"></i>
+                        {{ aiLoading ? '分析中...' : '获取投流建议' }}
+                    </button>
+                </div>
+                <div v-if="aiLoading" class="ai-loading">
+                    <Loading text="正在分析数据，请稍候..." />
+                </div>
+                <div v-if="aiError" class="ai-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>{{ aiErrorMessage }}</p>
+                </div>
+                <div v-if="aiSuggestion" class="suggestion-content">
+                    <div class="suggestion-text" v-html="formattedSuggestion"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
+import { marked } from 'marked'
 import { Tabs, Loading, ExampleButton } from '@/components/common'
 import ImageSection from '@/components/common/ImageSection.vue'
 import VideoSection from '@/components/common/VideoSection.vue'
@@ -79,6 +100,10 @@ const result = ref<XhsData | null>(null)
 const currentImage = ref('')
 const textarea = ref<HTMLTextAreaElement | null>(null)
 const resultSectionRef = ref<HTMLElement | null>(null)
+const aiLoading = ref(false)
+const aiError = ref(false)
+const aiErrorMessage = ref('')
+const aiSuggestion = ref('')
 
 const xhsExample = '15 因吹斯汀发布了一篇小红书笔记，快来看吧！ 😆 SN7fWpcevhCN7Q4 😆 http://xhslink.com/a/8AMzWCjxuowgb 复制本条信息，打开【小红书】App查看精彩内容！'
 const setExample = (val: string) => {
@@ -182,6 +207,248 @@ const downloadAll = async () => {
         })
     }
 }
+
+const getAiSuggestion = async () => {
+    if (!result.value) return
+
+    aiLoading.value = true
+    aiError.value = false
+    aiErrorMessage.value = ''
+    aiSuggestion.value = ''
+
+    try {
+        // 构建发送给AI的数据
+        const aiData = {
+            title: result.value.title,
+            description: result.value.desc,
+            author: result.value.author
+            // images: result.value.imgurl || [],
+            // video: result.value.url || '',
+            // cover: result.value.cover,
+            // avatar: result.value.avatar
+        }
+
+        // 直接写死的API密钥
+        const apiKey = 'a835b9f6866d48ec956d341418df8a50.NuhlKYn58EkCb5iP'
+
+        const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'GLM-4.1V-Thinking-Flash',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `你是一个小红书投流策略专家，请基于以下笔记内容进行深度分析，并给出精准的投放建议：
+**分析要求**
+1. 内容定位分析：
+   - 解析标题"良渚"与话题标签的关联性
+   - 识别核心内容方向（历史/旅游/生活方式）
+   - 评估当前话题组合的覆盖面和精准度
+
+2. 受众画像建议：
+   - 地域定位：根据"良渚古城""苕溪"等关键词推荐重点投放城市
+   - 兴趣标签：结合#后花园#暖村等标签推测潜在用户兴趣圈层
+   - 人群特征：推断可能吸引的年龄层及用户类型（如文化爱好者/亲子游群体）
+
+3. 精准投流策略：
+   ▶ 话题扩展：建议新增3-5个相关话题（例：#杭州周边游 #周末去哪玩）
+   ▶ 人群定向：明确应触达的粉丝画像（地域/兴趣/行为特征）
+   ▶ 竞品关联：推荐可借势的同类热门笔记作者
+   ▶ 投放时机：结合"暖村"标签推荐季节性投放节点
+
+4. 优化建议：
+   - 标题增强吸引力的修改方案
+   - 话题标签结构调整建议`
+                    },
+                    {
+                        role: 'user',
+                        content: `请分析以下小红书笔记并提供投流建议：\n${JSON.stringify(aiData, null, 2)}`
+                    }
+                ],
+                temperature: 0.7
+            })
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+            aiSuggestion.value = data.choices[0].message.content
+        } else {
+            throw new Error('Invalid response format')
+        }
+    } catch (err: any) {
+        aiError.value = true
+        aiErrorMessage.value = err.message || '获取AI建议失败，请稍后重试'
+        console.error('AI建议获取失败:', err)
+    } finally {
+        aiLoading.value = false
+    }
+}
+
+const formattedSuggestion = computed(() => {
+    if (!aiSuggestion.value) return ''
+    // 使用marked库格式化markdown内容
+    return marked(aiSuggestion.value)
+})
 </script>
 
-<style scoped></style>
+<style scoped>
+.ai-suggestion-section {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.suggestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.suggestion-header h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.suggestion-header h2 i {
+    margin-right: 10px;
+    color: #ffd700;
+}
+
+.get-suggestion-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.get-suggestion-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.get-suggestion-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ai-loading {
+    text-align: center;
+    padding: 40px;
+    color: #ffffff;
+}
+
+.ai-error {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    color: #ff6b6b;
+    text-align: center;
+}
+
+.suggestion-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.suggestion-text {
+    line-height: 1.8;
+    color: #333;
+}
+
+.suggestion-text :deep(h1),
+.suggestion-text :deep(h2),
+.suggestion-text :deep(h3),
+.suggestion-text :deep(h4),
+.suggestion-text :deep(h5),
+.suggestion-text :deep(h6) {
+    color: #667eea;
+    margin: 20px 0 10px 0;
+    font-weight: 600;
+}
+
+.suggestion-text :deep(p) {
+    margin-bottom: 15px;
+}
+
+.suggestion-text :deep(strong) {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.suggestion-text :deep(em) {
+    color: #764ba2;
+    font-style: italic;
+}
+
+.suggestion-text :deep(ul),
+.suggestion-text :deep(ol) {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+
+.suggestion-text :deep(li) {
+    margin-bottom: 8px;
+}
+
+.suggestion-text :deep(code) {
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.suggestion-text :deep(pre) {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+
+.suggestion-text :deep(blockquote) {
+    border-left: 4px solid #667eea;
+    padding-left: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .suggestion-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .get-suggestion-btn {
+        width: 100%;
+    }
+    .ai-suggestion-section {
+        padding: 20px 10px;
+    }
+}
+</style>
