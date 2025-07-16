@@ -71,6 +71,51 @@
                     <i class="fas fa-exclamation-triangle"></i>
                     <p>{{ aiErrorMessage }}</p>
                 </div>
+                <!-- 默认展示分析维度 -->
+                <div v-if="!aiSuggestion && !aiLoading" class="analysis-preview">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-chart-line"></i> AI分析维度</h3>
+                        <p>基于5年+投流操盘手经验，从以下4个维度深度分析您的笔记</p>
+                    </div>
+                    <div class="analysis-dimensions">
+                        <div class="dimension-item">
+                            <div class="dimension-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="dimension-content">
+                                <h4>内容定位分析</h4>
+                                <p>话题关联性量化、核心方向提炼、话题覆盖率计算</p>
+                            </div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="dimension-content">
+                                <h4>受众画像建议</h4>
+                                <p>地域定位推荐、兴趣标签匹配、人群特征分析</p>
+                            </div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="dimension-content">
+                                <h4>精准投流策略</h4>
+                                <p>话题扩展建议、人群定向优化、竞品借势分析</p>
+                            </div>
+                        </div>
+                        <div class="dimension-item">
+                            <div class="dimension-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="dimension-content">
+                                <h4>内容优化建议</h4>
+                                <p>标题升级方案、标签重构策略、CTR提升预估</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div v-if="aiSuggestion" class="suggestion-content">
                     <div class="suggestion-text" v-html="formattedSuggestion"></div>
                 </div>
@@ -156,7 +201,10 @@ const parseUrl = async () => {
             }
             // 解析成功后滚动到结果
             nextTick(() => {
-                resultSectionRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                resultSectionRef.value?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                })
             })
         } else {
             error.value = true
@@ -327,41 +375,79 @@ const formattedSuggestion = computed(() => {
 
 <style scoped>
 .ai-suggestion-section {
-    padding: 20px;
+    padding: 30px;
     background: linear-gradient(135deg, #ff2442 0%, #ff6b7a 100%);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(255, 36, 66, 0.15);
-    margin: 20px 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(255, 36, 66, 0.25);
+    margin: 30px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-suggestion-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    pointer-events: none;
 }
 
 .suggestion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
 }
 
 .suggestion-header h2 {
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 600;
     margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
 }
 
 .suggestion-header h2 i {
-    margin-right: 10px;
+    margin-right: 12px;
     color: #ffffff;
+    font-size: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .get-suggestion-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
     color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 15px 30px;
+    border-radius: 30px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 600;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .get-suggestion-btn:hover:not(:disabled) {
@@ -392,11 +478,15 @@ const formattedSuggestion = computed(() => {
 }
 
 .suggestion-content {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     margin-top: 20px;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .suggestion-text {
@@ -463,6 +553,96 @@ const formattedSuggestion = computed(() => {
     color: #666;
 }
 
+.analysis-preview {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 25px;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.preview-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.preview-header h3 {
+    color: #ff2442;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-header h3 i {
+    margin-right: 10px;
+    color: #ff2442;
+}
+
+.preview-header p {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.analysis-dimensions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.dimension-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 36, 66, 0.1);
+    transition: all 0.3s ease;
+}
+
+.dimension-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 36, 66, 0.15);
+    border-color: rgba(255, 36, 66, 0.2);
+}
+
+.dimension-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff2442, #ff6b7a);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.dimension-icon i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.dimension-content h4 {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.dimension-content p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
 @media (max-width: 768px) {
     .suggestion-header {
         flex-direction: column;
@@ -473,8 +653,28 @@ const formattedSuggestion = computed(() => {
     .get-suggestion-btn {
         width: 100%;
     }
+
     .ai-suggestion-section {
         padding: 20px 10px;
+    }
+
+    .analysis-dimensions {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .dimension-item {
+        padding: 15px;
+    }
+
+    .dimension-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 12px;
+    }
+
+    .dimension-icon i {
+        font-size: 1rem;
     }
 }
 </style>
