@@ -6,6 +6,7 @@ export interface XhsData {
     desc: string
     avatar: string
     cover: string
+    images?: string[]
     imgurl?: string[]
     url?: string
 }

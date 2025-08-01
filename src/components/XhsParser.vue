@@ -37,8 +37,8 @@
             <div class="result-content">
                 <VideoSection v-if="isVideo && result.url && result.cover" :url="result.url" :cover="result.cover" @download="downloadVideo" />
                 <ImageSection
-                    v-else-if="result.imgurl && result.cover"
-                    :imgurl="result.imgurl"
+                    v-else-if="(result.images || result.imgurl) && result.cover"
+                    :imgurl="result.images || result.imgurl || []"
                     :currentImage="currentImage"
                     @update:currentImage="val => (currentImage = val)"
                     @downloadMain="() => downloadImage(currentImage, result.title + '-主图.jpg')"
@@ -56,7 +56,7 @@
                 />
             </div>
             <!-- AI投流建议模块 -->
-            <div v-if="result" class="ai-suggestion-section">
+            <div class="ai-suggestion-section">
                 <div class="suggestion-header">
                     <h2><i class="fas fa-robot"></i> AI投流建议</h2>
                     <button class="get-suggestion-btn" @click="getAiSuggestion" :disabled="aiLoading">
@@ -196,7 +196,7 @@ const parseUrl = async () => {
         const response = await fetchXhsData(extractedUrl)
         if (response.data.code === 200) {
             result.value = response.data.data
-            if (response.data.data.imgurl) {
+            if (response.data.data.images || response.data.data.imgurl) {
                 currentImage.value = response.data.data.cover
             }
             // 解析成功后滚动到结果
@@ -241,9 +241,10 @@ const downloadVideo = async () => {
 }
 
 const downloadAll = async () => {
-    if (!result.value || !result.value.imgurl) return
-    for (let i = 0; i < result.value.imgurl.length; i++) {
-        const img = result.value.imgurl[i]
+    const images = result.value?.images || result.value?.imgurl
+    if (!result.value || !images) return
+    for (let i = 0; i < images.length; i++) {
+        const img = images[i]
         await new Promise(resolve => {
             setTimeout(
                 async () => {
