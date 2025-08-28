@@ -12,7 +12,7 @@
         <div class="input-section">
             <div class="input-box">
                 <div class="textarea-wrapper">
-                    <Tabs :activeColor="'var(--primary-color)'" />
+                    <!-- <Tabs :activeColor="'var(--primary-color)'" /> -->
                     <textarea v-model="url" placeholder="在此处粘贴小红书分享链接" @keyup.enter="parseUrl" rows="1" ref="textarea" @input="autoResize"></textarea>
                     <button class="parse-btn" @click="parseUrl"><i class="fas fa-bolt"></i> 解析</button>
                 </div>
