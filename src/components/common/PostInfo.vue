@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { defineProps } from 'vue'
-const props = defineProps<{
+defineProps<{
     author: string
     userId?: string
     authorID?: string
@@ -29,4 +29,8 @@ const props = defineProps<{
     titleLabel?: string
     descLabel?: string
 }>()
+</script>
+
+<script lang="ts">
+export default {}
 </script>

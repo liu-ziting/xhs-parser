@@ -35,10 +35,29 @@
                 <!-- <button v-else class="download-all" @click="downloadAll"><i class="fas fa-download"></i> 一键下载全部图片</button> -->
             </div>
             <div class="result-content">
-                <VideoSection v-if="isVideo && result.url && result.cover" :url="result.url" :cover="result.cover" @download="downloadVideo" />
+                <!-- 视频类型：显示链接 -->
+                <div v-if="result.type === 'video' && result.url" class="video-section">
+                    <div class="video-link-section">
+                        <div class="link-header">
+                            <i class="fas fa-video"></i>
+                            <h3>视频链接</h3>
+                        </div>
+                        <div class="link-content">
+                            <div class="copy-section">
+                                <input :value="result.url" ref="urlInput" class="url-input" readonly />
+                                <button class="copy-btn" @click="copyVideoUrl"><i class="fas fa-copy"></i> 复制链接</button>
+                            </div>
+                            <div class="video-tip">
+                                <i class="fas fa-info-circle"></i>
+                                <p>由于反盗链机制，请复制链接后自行在浏览器或下载工具中打开</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 图片类型：显示图片 -->
                 <ImageSection
-                    v-else-if="(result.images || result.imgurl) && result.cover"
-                    :imgurl="result.images || result.imgurl || []"
+                    v-else-if="result.type === 'normal' && result.images && result.cover"
+                    :imgurl="result.images"
                     :currentImage="currentImage"
                     @update:currentImage="val => (currentImage = val)"
                     @downloadMain="() => downloadImage(currentImage, result.title + '-主图.jpg')"
@@ -129,7 +148,6 @@ import { ref, computed, nextTick } from 'vue'
 import { marked } from 'marked'
 import { Tabs, Loading, ExampleButton } from '@/components/common'
 import ImageSection from '@/components/common/ImageSection.vue'
-import VideoSection from '@/components/common/VideoSection.vue'
 import PostInfo from '@/components/common/PostInfo.vue'
 import { fetchXhsData } from '@/utils/api'
 import { downloadFile } from '@/utils/download'
@@ -156,7 +174,7 @@ const setExample = (val: string) => {
     nextTick(autoResize)
 }
 
-const isVideo = computed(() => result.value && result.value.url && !result.value.imgurl)
+const isVideo = computed(() => result.value && result.value.type === 'video')
 
 const autoResize = () => {
     if (textarea.value) {
@@ -196,7 +214,7 @@ const parseUrl = async () => {
         const response = await fetchXhsData(extractedUrl)
         if (response.data.code === 200) {
             result.value = response.data.data
-            if (response.data.data.images || response.data.data.imgurl) {
+            if (response.data.data.type === 'normal' && response.data.data.images) {
                 currentImage.value = response.data.data.cover
             }
             // 解析成功后滚动到结果
@@ -235,9 +253,21 @@ const downloadImage = async (imgUrl: string, filename: string) => {
     document.body.removeChild(a)
 }
 
-const downloadVideo = async () => {
+const urlInput = ref<HTMLInputElement | null>(null)
+
+const copyVideoUrl = async () => {
     if (!result.value || !result.value.url) return
-    await downloadFile(result.value.url, `${result.value.title}.mp4`)
+
+    try {
+        if (urlInput.value) {
+            urlInput.value.select()
+            await navigator.clipboard.writeText(result.value.url)
+            alert('链接已复制到剪贴板！')
+        }
+    } catch (err) {
+        console.error('复制失败:', err)
+        alert('复制失败，请手动复制链接')
+    }
 }
 
 const downloadAll = async () => {
@@ -375,6 +405,96 @@ const formattedSuggestion = computed(() => {
 </script>
 
 <style scoped>
+.video-section {
+    margin-bottom: 30px;
+}
+
+.video-link-section {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border: 2px solid #ff2442;
+}
+
+.link-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.link-header i {
+    font-size: 1.5rem;
+    color: #ff2442;
+    margin-right: 12px;
+}
+
+.link-header h3 {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.link-content {
+    text-align: center;
+}
+
+.copy-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.url-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fff;
+    font-family: monospace;
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, #ff2442, #ff6b7a);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 36, 66, 0.3);
+}
+
+.video-tip {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    color: #856404;
+}
+
+.video-tip i {
+    margin-right: 10px;
+    color: #ffc107;
+    font-size: 1.1rem;
+}
+
+.video-tip p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
 .ai-suggestion-section {
     padding: 30px;
     background: linear-gradient(135deg, #ff2442 0%, #ff6b7a 100%);
