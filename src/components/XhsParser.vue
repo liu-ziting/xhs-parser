@@ -594,6 +594,19 @@ const formattedSuggestion = computed(() => {
         font-size: 0.8rem;
         padding: 8px 10px;
     }
+
+    /* 整体容器优化 */
+    .container {
+        padding: 10px;
+    }
+
+    .result-section {
+        margin-top: 15px;
+    }
+
+    .result-header h2 {
+        font-size: 1.2rem;
+    }
 }
 
 .video-tip {
@@ -908,12 +921,26 @@ const formattedSuggestion = computed(() => {
         gap: 15px;
     }
 
+    .suggestion-header h2 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .suggestion-header h2 i {
+        font-size: 1.3rem;
+        margin-right: 8px;
+    }
+
     .get-suggestion-btn {
         width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
     }
 
     .ai-suggestion-section {
-        padding: 20px 10px;
+        padding: 20px 15px;
+        margin: 20px -10px;
+        border-radius: 12px;
     }
 
     .analysis-dimensions {
@@ -933,6 +960,130 @@ const formattedSuggestion = computed(() => {
 
     .dimension-icon i {
         font-size: 1rem;
+    }
+
+    .preview-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .preview-header p {
+        font-size: 0.9rem;
+    }
+
+    .dimension-content h4 {
+        font-size: 1rem;
+    }
+
+    .dimension-content p {
+        font-size: 0.85rem;
+    }
+
+    .suggestion-content {
+        padding: 20px;
+        margin-top: 15px;
+    }
+
+    .suggestion-text {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .suggestion-text :deep(h1),
+    .suggestion-text :deep(h2),
+    .suggestion-text :deep(h3),
+    .suggestion-text :deep(h4),
+    .suggestion-text :deep(h5),
+    .suggestion-text :deep(h6) {
+        font-size: 1.1rem;
+        margin: 15px 0 8px 0;
+    }
+
+    .suggestion-text :deep(p) {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .suggestion-text :deep(ul),
+    .suggestion-text :deep(ol) {
+        padding-left: 20px;
+        margin: 12px 0;
+    }
+
+    .suggestion-text :deep(li) {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+}
+
+/* 超小屏幕进一步优化 */
+@media (max-width: 480px) {
+    .ai-suggestion-section {
+        padding: 15px 10px;
+        margin: 15px -5px;
+    }
+
+    .suggestion-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .get-suggestion-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .preview-header h3 {
+        font-size: 1rem;
+    }
+
+    .preview-header p {
+        font-size: 0.85rem;
+    }
+
+    .dimension-item {
+        padding: 12px;
+    }
+
+    .dimension-icon {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+    }
+
+    .dimension-icon i {
+        font-size: 0.9rem;
+    }
+
+    .dimension-content h4 {
+        font-size: 0.95rem;
+    }
+
+    .dimension-content p {
+        font-size: 0.8rem;
+    }
+
+    .suggestion-content {
+        padding: 15px;
+    }
+
+    .suggestion-text {
+        font-size: 0.85rem;
+    }
+
+    .suggestion-text :deep(h1),
+    .suggestion-text :deep(h2),
+    .suggestion-text :deep(h3),
+    .suggestion-text :deep(h4),
+    .suggestion-text :deep(h5),
+    .suggestion-text :deep(h6) {
+        font-size: 1rem;
+    }
+
+    .suggestion-text :deep(p) {
+        font-size: 0.85rem;
+    }
+
+    .suggestion-text :deep(li) {
+        font-size: 0.85rem;
     }
 }
 </style>
