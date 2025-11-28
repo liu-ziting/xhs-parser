@@ -44,12 +44,21 @@
                         </div>
                         <div class="link-content">
                             <div class="copy-section">
-                                <input :value="result.url" ref="urlInput" class="url-input" readonly />
-                                <button class="copy-btn" @click="copyVideoUrl"><i class="fas fa-copy"></i> 复制链接</button>
+                                <input
+                                    :value="result.url"
+                                    ref="urlInput"
+                                    class="url-input"
+                                    readonly
+                                    @click="selectUrlText"
+                                    @touchstart="handleTouchStart"
+                                    @touchend="handleTouchEnd"
+                                />
+                                <button class="copy-btn" @click="copyVideoUrl" @touchstart="handleButtonTouch"><i class="fas fa-copy"></i> 复制链接</button>
                             </div>
                             <div class="video-tip">
                                 <i class="fas fa-info-circle"></i>
                                 <p>由于反盗链机制，请复制链接后自行在浏览器或下载工具中打开</p>
+                                <p class="mobile-tip">手机端提示：长按链接可快速复制</p>
                             </div>
                         </div>
                     </div>
@@ -270,6 +279,36 @@ const copyVideoUrl = async () => {
     }
 }
 
+const selectUrlText = () => {
+    if (urlInput.value) {
+        urlInput.value.select()
+    }
+}
+
+let touchTimer: number | null = null
+
+const handleTouchStart = () => {
+    touchTimer = window.setTimeout(() => {
+        if (result.value?.url) {
+            navigator.clipboard.writeText(result.value.url)
+            alert('链接已复制到剪贴板！')
+        }
+    }, 500) // 长按500ms触发复制
+}
+
+const handleTouchEnd = () => {
+    if (touchTimer) {
+        clearTimeout(touchTimer)
+        touchTimer = null
+    }
+}
+
+const handleButtonTouch = (event: TouchEvent) => {
+    // 防止触摸事件触发两次（click和touchstart）
+    event.preventDefault()
+    copyVideoUrl()
+}
+
 const downloadAll = async () => {
     const images = result.value?.images || result.value?.imgurl
     if (!result.value || !images) return
@@ -444,6 +483,7 @@ const formattedSuggestion = computed(() => {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    align-items: stretch;
 }
 
 .url-input {
@@ -454,23 +494,106 @@ const formattedSuggestion = computed(() => {
     font-size: 1rem;
     background: #fff;
     font-family: monospace;
+    min-width: 0; /* 防止flex item溢出 */
 }
 
 .copy-btn {
     background: linear-gradient(135deg, #ff2442, #ff6b7a);
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .copy-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 36, 66, 0.3);
+}
+
+/* 手机端响应式优化 */
+@media (max-width: 768px) {
+    .copy-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .url-input {
+        font-size: 0.9rem;
+        padding: 14px 16px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .copy-btn {
+        padding: 14px 20px;
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .video-link-section {
+        padding: 20px;
+        margin: 0 -10px;
+        border-radius: 8px;
+    }
+
+    .link-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .link-header i {
+        font-size: 1.3rem;
+        margin-right: 0;
+    }
+
+    .link-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .video-tip {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .video-tip i {
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+    .video-link-section {
+        padding: 15px;
+        margin: 0 -5px;
+    }
+
+    .url-input {
+        font-size: 0.85rem;
+        padding: 12px 14px;
+    }
+
+    .copy-btn {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+
+    .link-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .video-tip {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
 }
 
 .video-tip {
@@ -493,6 +616,20 @@ const formattedSuggestion = computed(() => {
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.4;
+}
+
+.mobile-tip {
+    margin-top: 8px !important;
+    font-size: 0.8rem !important;
+    color: #666 !important;
+    font-style: italic;
+}
+
+/* 只在手机端显示移动提示 */
+@media (min-width: 769px) {
+    .mobile-tip {
+        display: none;
+    }
 }
 
 .ai-suggestion-section {
