@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { ApiResponse } from '@/types/xhs'
 
 const api = axios.create({
-    baseURL: 'https://api.bugpk.com/api/xhsjx',
+    baseURL: 'https://api.bugpk.com/api/xhslive',
     validateStatus: status => (status && status >= 200 && status < 300) || status === 500
 })
 
